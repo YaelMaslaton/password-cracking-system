@@ -73,18 +73,11 @@ public class MinionService implements CrackingService {
     }
     
     private void handlePasswordFound(CrackRequest request, long number, String phone) {
-        LogUtils.setSubTaskId(minionId + MinionConstants.SUBTASK_FOUND_SUFFIX + number);
         log.info("Password FOUND: password={}", phone);
         sendResult(request.getTaskId(), MinionConstants.STATUS_FOUND, phone);
     }
     
     private void sendResult(String taskId, String status, String password) {
-        String subTaskSuffix = MinionConstants.STATUS_FOUND.equals(status) 
-            ? MinionConstants.SUBTASK_RESULT_FOUND 
-            : MinionConstants.SUBTASK_RESULT_NOT_FOUND;
-
-        LogUtils.setSubTaskId(minionId + subTaskSuffix);
-
         ResultRequest result = ResultRequest.builder()
                 .taskId(taskId)
                 .status(status)

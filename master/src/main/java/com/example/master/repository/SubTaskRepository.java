@@ -16,4 +16,5 @@ public interface SubTaskRepository extends JpaRepository<SubTaskEntity, UUID> {
     List<SubTaskEntity> findByTaskIdAndStatus(UUID taskId, String status);
     List<SubTaskEntity> findByStatusAndStartedAtBefore(String status, LocalDateTime threshold);
     List<SubTaskEntity> findByStatus(String statusTimeout);
+
 }

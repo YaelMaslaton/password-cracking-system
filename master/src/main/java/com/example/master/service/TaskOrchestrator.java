@@ -57,7 +57,7 @@ public class TaskOrchestrator {
         for (Range range : ranges) {
             UUID subTaskId = UUID.randomUUID();
             SubTaskEntity subTask = new SubTaskEntity(subTaskId, taskId, range.getRangeFrom(), 
-                range.getRangeTo(), STATUS_RUNNING, null, LocalDateTime.now());
+                range.getRangeTo(), STATUS_RUNNING, null, LocalDateTime.now(), 0);
             subTaskRepository.save(subTask);
             subTasks.add(subTask);
         }

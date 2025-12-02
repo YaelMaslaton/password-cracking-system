@@ -135,7 +135,6 @@ public class LoggingAspect {
     }
 
     private boolean hasMDCKey(String key) {
-        var contextMap = MDC.getCopyOfContextMap();
-        return contextMap != null && contextMap.containsKey(key);
+        return MDC.get(key) != null;
     }
 }

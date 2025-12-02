@@ -244,3 +244,26 @@ Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No q
 2025-12-02 03:24:28 DEBUG [main] [] [test-minion-result-not-found] [] com.example.minion.service.MinionService - Testing: 055-00000000 -> dcb085ec7b26b19e1db54c570900ec53
 2025-12-02 03:24:28 INFO  [main] [] [test-minion-found-500000000] [] com.example.minion.service.MinionService - Password FOUND: password=055-00000000
 2025-12-02 03:24:28 INFO  [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Crack task completed
+2025-12-02 13:43:27 INFO  [background-preinit] [] [] [] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-12-02 13:43:27 INFO  [main] [] [] [] com.example.minion.MinionServiceApplicationTests - Starting MinionServiceApplicationTests using Java 20.0.1 with PID 23136 (started by User in C:\Users\User\Downloads\minion-service)
+2025-12-02 13:43:27 INFO  [main] [] [] [] com.example.minion.MinionServiceApplicationTests - No active profile set, falling back to 1 default profile: "default"
+2025-12-02 13:43:29 INFO  [main] [] [] [] com.example.minion.MinionServiceApplicationTests - Started MinionServiceApplicationTests in 1.957 seconds (process running for 2.704)
+2025-12-02 13:43:30 WARN  [main] [] [] [] com.example.minion.service.MinionService - Invalid range: rangeFrom=null, rangeTo=500000000
+2025-12-02 13:43:30 INFO  [main] [] [] [] com.example.minion.service.MinionService - Starting crack task: hash=dcb085ec7b26b19e1db54c570900ec53, range=500000000-500000010
+2025-12-02 13:43:30 DEBUG [main] [] [] [] com.example.minion.service.MinionService - Processing 11 phone numbers in range
+2025-12-02 13:43:30 DEBUG [main] [] [] [] com.example.minion.service.MinionService - Testing: 055-00000000 -> dcb085ec7b26b19e1db54c570900ec53
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-found-500000000] [] com.example.minion.service.MinionService - Password FOUND: password=055-00000000
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Crack task completed
+2025-12-02 13:43:30 WARN  [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Invalid range: rangeFrom=500000001, rangeTo=500000000
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Starting crack task: hash=nonexistenthash123456789, range=500000000-500000002
+2025-12-02 13:43:30 DEBUG [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Processing 3 phone numbers in range
+2025-12-02 13:43:30 DEBUG [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Testing: 055-00000000 -> dcb085ec7b26b19e1db54c570900ec53
+2025-12-02 13:43:30 DEBUG [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Testing: 055-00000001 -> ee8367ffbf2ca8be11a21bb4baec6468
+2025-12-02 13:43:30 DEBUG [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Testing: 055-00000002 -> 7c2307ba3e4203187d05c4af2144a8e4
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Password not found in range: 500000000-500000002
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-result-not-found] [] com.example.minion.service.MinionService - Crack task completed
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-result-not-found] [] com.example.minion.service.MinionService - Starting crack task: hash=dcb085ec7b26b19e1db54c570900ec53, range=500000000-500000000
+2025-12-02 13:43:30 DEBUG [main] [] [test-minion-result-not-found] [] com.example.minion.service.MinionService - Processing 1 phone numbers in range
+2025-12-02 13:43:30 DEBUG [main] [] [test-minion-result-not-found] [] com.example.minion.service.MinionService - Testing: 055-00000000 -> dcb085ec7b26b19e1db54c570900ec53
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-found-500000000] [] com.example.minion.service.MinionService - Password FOUND: password=055-00000000
+2025-12-02 13:43:30 INFO  [main] [] [test-minion-result-found] [] com.example.minion.service.MinionService - Crack task completed

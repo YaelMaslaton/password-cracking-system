@@ -39,4 +39,7 @@ public class SubTaskEntity {
     
     @Column(name = "started_at")
     private LocalDateTime startedAt;
+
+    @Column(nullable = false)
+    private int retryCount = 0;
 }

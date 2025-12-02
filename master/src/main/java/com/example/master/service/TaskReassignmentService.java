@@ -25,56 +25,70 @@ public class TaskReassignmentService {
 
     private final SubTaskRepository subTaskRepository;
     private final TaskRepository taskRepository;
+    private final BatchManager batchManager;
     private final MinionClient minionClient;
     private final ExecutorService minionDispatchExecutor;
 
     @Transactional
     public void reassignTimeoutTasks() {
+
         List<SubTaskEntity> timeoutTasks = subTaskRepository.findByStatus(STATUS_TIMEOUT);
-        
         for (SubTaskEntity timeoutTask : timeoutTasks) {
-            reassignTask(timeoutTask);
+            reassignOne(timeoutTask);
         }
     }
 
-    private void reassignTask(SubTaskEntity timeoutTask) {
-        int availableMinions = minionClient.getMinionCount();
-        if (availableMinions == 0) {
-            log.warn("No minions available for reassignment of task {}", timeoutTask.getSubTaskId());
+    private void reassignOne(SubTaskEntity subTask) {
+
+        TaskEntity task = taskRepository.findById(subTask.getTaskId())
+                .orElseThrow();
+
+        if (subTask.getRetryCount() > MAX_RETRY_COUNT) {
+            log.error("SubTask {} exceeded max retries → marking FAILED",
+                    subTask.getSubTaskId());
+
+            subTask.setStatus(STATUS_FAILED);
+            subTaskRepository.save(subTask);
+            task.setStatus(STATUS_FAILED);
+            taskRepository.save(task);
+            batchManager.finalizeTask(task);
             return;
         }
 
-        int newMinionIndex = (int) (System.currentTimeMillis() % availableMinions);
-        
-        timeoutTask.setStatus(STATUS_RUNNING);
-        timeoutTask.setStartedAt(LocalDateTime.now());
-        subTaskRepository.save(timeoutTask);
+        int available = minionClient.getMinionCount();
+        if (available == 0) {
+            log.warn("No minions available → keeping SubTask {} in TIMEOUT",
+                    subTask.getSubTaskId());
+            return;
+        }
+
+        int chosen = (int) (System.currentTimeMillis() % available);
 
         MinionRequest request = new MinionRequest(
-            timeoutTask.getSubTaskId().toString(),
-            getHashForTask(timeoutTask),
-            timeoutTask.getRangeStart(),
-            timeoutTask.getRangeEnd()
+                subTask.getSubTaskId().toString(),
+                task.getHashValue(),
+                subTask.getRangeStart(),
+                subTask.getRangeEnd()
         );
 
         minionDispatchExecutor.submit(() -> {
             try {
-                MDC.put("subTaskId", timeoutTask.getSubTaskId().toString());
-                log.info("Reassigning timeout task {} to minion {}", timeoutTask.getSubTaskId(), newMinionIndex);
-                minionClient.sendCrackRequest(newMinionIndex, request);
+                MDC.put("subTaskId", subTask.getSubTaskId().toString());
+                log.info("Reassigning SubTask {} to minion {}",
+                        subTask.getSubTaskId(), chosen);
+
+                minionClient.sendCrackRequest(chosen, request);
+
             } catch (Exception e) {
-                log.error("Failed to reassign task {} to minion {}: {}", 
-                    timeoutTask.getSubTaskId(), newMinionIndex, e.getMessage());
-                timeoutTask.setStatus(STATUS_TIMEOUT);
-                subTaskRepository.save(timeoutTask);
+                log.error("Dispatch failed for SubTask {} → setting TIMEOUT again",
+                        subTask.getSubTaskId());
+
+                subTask.setStatus(STATUS_TIMEOUT);
+                subTaskRepository.save(subTask);
+
             } finally {
                 MDC.remove("subTaskId");
             }
         });
-    }
-
-    private String getHashForTask(SubTaskEntity subTask) {
-        TaskEntity task = taskRepository.findById(subTask.getTaskId()).orElseThrow();
-        return task.getHashValue();
     }
 }
