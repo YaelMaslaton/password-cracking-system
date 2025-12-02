@@ -35,11 +35,8 @@ public class TimeoutService {
         // Find RUNNING tasks that timed out
         List<SubTaskEntity> runningTimedOut = subTaskRepository.findByStatusAndStartedAtBefore(STATUS_RUNNING, timeoutThreshold);
         
-        // Find TIMEOUT tasks with retry count < MAX_RETRY_COUNT
-        List<SubTaskEntity> timeoutRetryable = subTaskRepository.findByStatus(STATUS_TIMEOUT)
-            .stream()
-            .filter(subTask -> subTask.getRetryCount() < MAX_RETRY_COUNT)
-            .toList();
+        List<SubTaskEntity> timeoutRetryable = subTaskRepository.findByStatus(STATUS_TIMEOUT);
+        runningTimedOut.addAll(timeoutRetryable);
 
         // Process running tasks that timed out
         for (SubTaskEntity subTask : runningTimedOut) {
