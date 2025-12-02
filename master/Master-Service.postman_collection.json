@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789012",
+		"name": "Master Service - Password Cracking",
+		"description": "Complete API collection for the Master Service distributed password cracking system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "batch_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "task_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Submit Hashes for Cracking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    pm.collectionVariables.set('batch_id', response.batchId);",
+							"    if (response.taskIds && response.taskIds.length > 0) {",
+							"        pm.collectionVariables.set('task_id', response.taskIds[0]);",
+							"    }",
+							"    console.log('Batch ID:', response.batchId);",
+							"    console.log('Task IDs:', response.taskIds);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "hashes.txt",
+							"description": "Upload a text file with MD5 hashes (one per line)"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/submit",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"submit"
+					]
+				},
+				"description": "Upload a file containing MD5 hashes to be cracked. The response will contain batch ID and task IDs."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Check Task Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/task/{{task_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"task",
+						"{{task_id}}"
+					]
+				},
+				"description": "Check the status of a specific task. Returns RUNNING, FOUND, NOT_FOUND, or FAILED."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Download Batch Results",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/batch/{{batch_id}}/results",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"batch",
+						"{{batch_id}}",
+						"results"
+					]
+				},
+				"description": "Download a text file containing all results for a batch. Format: hash:password or hash:NOT_FOUND"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Minion Result Callback (Internal)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"taskId\": \"{{task_id}}\",\n  \"status\": \"FOUND\",\n  \"password\": \"0501234567\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/result",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"result"
+					]
+				},
+				"description": "Internal endpoint for Minion services to report results. This is called automatically by Minions."
+			},
+			"response": []
+		}
+	]
+}

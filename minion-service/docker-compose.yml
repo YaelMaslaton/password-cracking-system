@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  minion1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minion1
+    ports:
+      - "8081:8080"
+    environment:
+      - MINION_ID=minion-1
+    restart: always
+    networks:
+      - cracking-net
+
+  minion2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minion2
+    ports:
+      - "8085:8080"
+    environment:
+      - MINION_ID=minion-2
+    restart: always
+    networks:
+      - cracking-net
+
+  minion3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minion3
+    ports:
+      - "8083:8080"
+    environment:
+      - MINION_ID=minion-3
+    restart: always
+    networks:
+      - cracking-net
+
+networks:
+  cracking-net:
+    external: true

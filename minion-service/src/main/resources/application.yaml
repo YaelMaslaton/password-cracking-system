@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+master:
+  url: http://master-service:8080/result
+
+minion:
+  id: ${MINION_ID:minion-1}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  show-actuator: true

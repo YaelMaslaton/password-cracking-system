@@ -1,0 +1,96 @@
+package com.example.minion.service;
+
+import com.example.minion.constants.MinionConstants;
+import com.example.minion.dto.CrackRequest;
+import com.example.minion.dto.ResultRequest;
+import com.example.minion.util.LogUtils;
+import com.example.minion.util.MD5Util;
+import com.example.minion.util.PhoneFormatter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class MinionService implements CrackingService {
+    
+    private final MasterClient masterClient;
+    
+    @Value("${minion.id}")
+    private String minionId;
+    
+    @Override
+    public void crack(CrackRequest request) {
+        if (!request.isValidRange()) {
+            log.warn("Invalid range: rangeFrom={}, rangeTo={}", 
+                    request.getRangeFrom(), request.getRangeTo());
+            return;
+        }
+        
+        log.info("Starting crack task: hash={}, range={}-{}", 
+                request.getHash(), request.getRangeFrom(), request.getRangeTo());
+        
+        boolean passwordFound = performBruteForceAttack(request);
+        
+        if (!passwordFound) {
+            log.info("Password not found in range: {}-{}", 
+                    request.getRangeFrom(), request.getRangeTo());
+            sendResult(request.getTaskId(), MinionConstants.STATUS_NOT_FOUND, null);
+        }
+        
+        log.info("Crack task completed");
+    }
+    
+    private boolean performBruteForceAttack(CrackRequest request) {
+        long totalNumbers = request.getRangeTo() - request.getRangeFrom() + 1;
+        log.debug("Processing {} phone numbers in range", totalNumbers);
+        
+        for (long number = request.getRangeFrom(); number <= request.getRangeTo(); number++) {
+            if (testPhoneNumber(request, number)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean testPhoneNumber(CrackRequest request, long number) {
+        String phone = PhoneFormatter.formatPhone(number);
+        String hash = MD5Util.computeHash(phone);
+        
+        if (number <= request.getRangeFrom() + MinionConstants.DEBUG_LOG_LIMIT) {
+            log.debug("Testing: {} -> {}", phone, hash);
+        }
+        
+        if (hash.equals(request.getHash())) {
+            handlePasswordFound(request, number, phone);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private void handlePasswordFound(CrackRequest request, long number, String phone) {
+        LogUtils.setSubTaskId(minionId + MinionConstants.SUBTASK_FOUND_SUFFIX + number);
+        log.info("Password FOUND: password={}", phone);
+        sendResult(request.getTaskId(), MinionConstants.STATUS_FOUND, phone);
+    }
+    
+    private void sendResult(String taskId, String status, String password) {
+        String subTaskSuffix = MinionConstants.STATUS_FOUND.equals(status) 
+            ? MinionConstants.SUBTASK_RESULT_FOUND 
+            : MinionConstants.SUBTASK_RESULT_NOT_FOUND;
+
+        LogUtils.setSubTaskId(minionId + subTaskSuffix);
+
+        ResultRequest result = ResultRequest.builder()
+                .taskId(taskId)
+                .status(status)
+                .password(password)
+                .build();
+        
+        masterClient.sendResult(result);
+    }
+}
