@@ -205,9 +205,6 @@ cd master && docker-compose up --build -d
 
 # ⚡ Step 3: Launch Minion Army (3 workers)
 cd ../minion-service && docker-compose up --build --scale minion-service=3 -d
-
-# 🚀 Step 4: Scale to 10 minions for MAXIMUM POWER!
-docker-compose up --scale minion-service=10 -d
 ```
 
 <div align="center">
