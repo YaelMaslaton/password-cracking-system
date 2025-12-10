@@ -3,7 +3,9 @@ package com.example.master.controller;
 import com.example.master.dto.BatchResponse;
 import com.example.master.dto.ResultRequest;
 import com.example.master.dto.TaskResponse;
+import com.example.master.enums.TaskStatus;
 import com.example.master.service.MasterService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +30,16 @@ import java.io.IOException;
 public class MasterController {
 
     private final MasterService masterService;
+    
+    @Value("${internal.api.key}")
+    private String internalApiKey;
 
     @Operation(
         summary = "Submit MD5 hashes for cracking",
         description = "Upload a file containing MD5 hashes (one per line) to be cracked by the distributed system"
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Hashes submitted successfully",
+        @ApiResponse(responseCode = "201", description = "Hashes submitted successfully",
             content = @Content(schema = @Schema(implementation = BatchResponse.class))),
         @ApiResponse(responseCode = "400", description = "Invalid file format or content")
     })
@@ -42,21 +48,19 @@ public class MasterController {
         @Parameter(description = "File containing MD5 hashes (one per line)", required = true)
         @RequestParam("file") MultipartFile file) throws IOException {
         BatchResponse response = masterService.submitHashes(file);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(
-        summary = "Receive result from Minion service",
-        description = "Endpoint for Minion services to report password cracking results"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Result processed successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid request format")
-    })
+    @Hidden
     @PostMapping("/result")
     public ResponseEntity<Void> receiveResult(
-        @Parameter(description = "Result from Minion service", required = true)
+        @RequestHeader(value = "X-INTERNAL-KEY", required = false) String apiKey,
         @Valid @RequestBody ResultRequest resultRequest) {
+        
+        if (apiKey == null || !apiKey.equals(internalApiKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
         masterService.processResult(resultRequest);
         return ResponseEntity.ok().build();
     }
@@ -79,12 +83,12 @@ public class MasterController {
             TaskResponse response = masterService.getTaskStatus(taskId);
             if (response == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new TaskResponse(taskId, null, "NOT_FOUND", null));
+                        .body(new TaskResponse(taskId, null, TaskStatus.NOT_FOUND, null));
             }
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new TaskResponse(taskId, null, "INVALID_TASK_ID", null));
+                    .body(new TaskResponse(taskId, null, TaskStatus.FAILED, null));
         }
     }
 }

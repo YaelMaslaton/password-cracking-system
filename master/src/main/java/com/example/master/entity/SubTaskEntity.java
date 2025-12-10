@@ -1,5 +1,6 @@
 package com.example.master.entity;
 
+import com.example.master.enums.SubTaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,8 +32,9 @@ public class SubTaskEntity {
     @Column(name = "range_end", nullable = false)
     private long rangeEnd;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private SubTaskStatus status;
     
     @Column(name = "result_password")
     private String resultPassword;

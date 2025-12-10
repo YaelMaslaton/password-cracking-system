@@ -1,6 +1,8 @@
 package com.example.master.dto;
 
+import com.example.master.enums.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -11,8 +13,8 @@ public class ResultRequest {
     @NotBlank
     private String taskId;
     
-    @NotBlank
-    private String status; // FOUND, NOT_FOUND
+    @NotNull
+    private TaskStatus status;
     
-    private String password; // optional
+    private String password;
 }

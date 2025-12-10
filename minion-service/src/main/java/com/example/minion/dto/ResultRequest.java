@@ -1,5 +1,6 @@
 package com.example.minion.dto;
 
+import com.example.minion.enums.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,10 +25,9 @@ public class ResultRequest {
     
     @Schema(
         description = "Result status",
-        example = "FOUND",
-        allowableValues = {"FOUND", "NOT_FOUND"}
+        example = "FOUND"
     )
-    String status;
+    TaskStatus status;
     
     @Schema(
         description = "Cracked password (only present when status is FOUND)",

@@ -1,6 +1,11 @@
 server:
   port: 8080
 
+# Internal API Key for Minion-Master communication
+internal:
+  api:
+    key: MY_SECRET_KEY
+
 master:
   url: http://master-service:8080/result
 

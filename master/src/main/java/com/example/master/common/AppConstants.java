@@ -16,16 +16,6 @@ public final class AppConstants {
     public static final long PHONE_RANGE_START = 0L;
     public static final long PHONE_RANGE_END = 99999999L;
 
-    // STATUS VALUES
-    public static final String STATUS_RUNNING = "RUNNING";
-    public static final String STATUS_COMPLETED = "COMPLETED";
-    public static final String STATUS_FOUND = "FOUND";
-    public static final String STATUS_NOT_FOUND = "NOT_FOUND";
-    public static final String STATUS_CANCELLED = "CANCELLED";
-    public static final String STATUS_SUBMITTED = "SUBMITTED";
-    public static final String STATUS_FAILED = "FAILED";
-
-
     // ERROR MESSAGES
     public static final String ERROR_FILE_MISSING = "File is missing";
     public static final String ERROR_FILE_EMPTY = "File is empty";
@@ -52,8 +42,15 @@ public final class AppConstants {
 
     // TIMEOUT SETTINGS
     public static final long SUBTASK_TIMEOUT_MINUTES = 30;
-    public static final String STATUS_TIMEOUT = "TIMEOUT";
     public static final int MAX_RETRY_COUNT = 3;
 
+    // OUTPUT FILE GENERATION
+    public static final String RESULT_FAILED_SERVER_CRASH = "FAILED_SERVER_CRASH";
+    public static final String HEADER_RESULTS = "# Password Cracking Results\n";
+    public static final String HEADER_BATCH_ID = "# Batch ID: ";
+    public static final String HEADER_TOTAL_TASKS = "# Total Tasks: ";
 
+    // THREAD POOL CONFIGURATION
+    public static final int THREAD_POOL_SIZE = 20;
+    public static final int THREAD_POOL_QUEUE_CAPACITY = 1000;
 }

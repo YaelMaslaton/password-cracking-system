@@ -4,6 +4,8 @@ import com.example.minion.dto.ResultRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -21,6 +23,9 @@ public class MasterClient {
     @Value("${master.url}")
     private String masterUrl;
     
+    @Value("${internal.api.key}")
+    private String internalApiKey;
+    
     /**
      * Sends result to master service with Spring Retry
      */
@@ -31,7 +36,11 @@ public class MasterClient {
     )
     public void sendResult(ResultRequest request) {
         try {
-            restTemplate.postForEntity(masterUrl, request, Void.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("X-INTERNAL-KEY", internalApiKey);
+            HttpEntity<ResultRequest> entity = new HttpEntity<>(request, headers);
+            
+            restTemplate.postForEntity(masterUrl, entity, Void.class);
             log.info("Result sent to master: status={}, password={}", 
                     request.getStatus(), request.getPassword());
         } catch (RestClientException e) {

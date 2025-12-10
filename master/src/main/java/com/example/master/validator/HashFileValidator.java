@@ -44,7 +44,7 @@ public class HashFileValidator {
             String hash = lines.get(i);
             validateMD5Format(hash, i + 1);
             validateNoDuplicate(hash, seenHashes);
-            
+
             validHashes.add(hash);
             seenHashes.add(hash);
         }
@@ -103,4 +103,5 @@ public class HashFileValidator {
             throw new IllegalArgumentException(ERROR_DUPLICATE_HASH + hash);
         }
     }
+
 }

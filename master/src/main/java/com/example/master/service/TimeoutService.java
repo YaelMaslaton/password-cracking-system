@@ -1,7 +1,7 @@
 package com.example.master.service;
 
 import com.example.master.entity.SubTaskEntity;
-
+import com.example.master.enums.SubTaskStatus;
 import com.example.master.repository.SubTaskRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,16 +33,16 @@ public class TimeoutService {
         LocalDateTime timeoutThreshold = LocalDateTime.now().minusMinutes(SUBTASK_TIMEOUT_MINUTES);
 
         // Find RUNNING tasks that timed out
-        List<SubTaskEntity> runningTimedOut = subTaskRepository.findByStatusAndStartedAtBefore(STATUS_RUNNING, timeoutThreshold);
+        List<SubTaskEntity> runningTimedOut = subTaskRepository.findByStatusAndStartedAtBefore(SubTaskStatus.RUNNING, timeoutThreshold);
         
-        List<SubTaskEntity> timeoutRetryable = subTaskRepository.findByStatus(STATUS_TIMEOUT);
+        List<SubTaskEntity> timeoutRetryable = subTaskRepository.findByStatus(SubTaskStatus.TIMEOUT);
         runningTimedOut.addAll(timeoutRetryable);
 
         // Process running tasks that timed out
         for (SubTaskEntity subTask : runningTimedOut) {
             log.warn("SubTask {} timed out after {} minutes", subTask.getSubTaskId(), SUBTASK_TIMEOUT_MINUTES);
             
-            subTask.setStatus(STATUS_TIMEOUT);
+            subTask.setStatus(SubTaskStatus.TIMEOUT);
             subTask.setRetryCount(subTask.getRetryCount() + 1);
             subTaskRepository.save(subTask);
         }

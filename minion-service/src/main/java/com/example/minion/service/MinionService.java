@@ -3,6 +3,7 @@ package com.example.minion.service;
 import com.example.minion.constants.MinionConstants;
 import com.example.minion.dto.CrackRequest;
 import com.example.minion.dto.ResultRequest;
+import com.example.minion.enums.TaskStatus;
 import com.example.minion.util.LogUtils;
 import com.example.minion.util.MD5Util;
 import com.example.minion.util.PhoneFormatter;
@@ -23,6 +24,7 @@ public class MinionService implements CrackingService {
     
     @Override
     public void crack(CrackRequest request) {
+
         if (!request.isValidRange()) {
             log.warn("Invalid range: rangeFrom={}, rangeTo={}", 
                     request.getRangeFrom(), request.getRangeTo());
@@ -37,7 +39,7 @@ public class MinionService implements CrackingService {
         if (!passwordFound) {
             log.info("Password not found in range: {}-{}", 
                     request.getRangeFrom(), request.getRangeTo());
-            sendResult(request.getTaskId(), MinionConstants.STATUS_NOT_FOUND, null);
+            sendResult(request.getTaskId(), TaskStatus.NOT_FOUND, null);
         }
         
         log.info("Crack task completed");
@@ -74,10 +76,10 @@ public class MinionService implements CrackingService {
     
     private void handlePasswordFound(CrackRequest request, long number, String phone) {
         log.info("Password FOUND: password={}", phone);
-        sendResult(request.getTaskId(), MinionConstants.STATUS_FOUND, phone);
+        sendResult(request.getTaskId(), TaskStatus.FOUND, phone);
     }
     
-    private void sendResult(String taskId, String status, String password) {
+    private void sendResult(String taskId, TaskStatus status, String password) {
         ResultRequest result = ResultRequest.builder()
                 .taskId(taskId)
                 .status(status)

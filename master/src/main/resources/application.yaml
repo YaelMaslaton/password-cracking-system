@@ -1,6 +1,11 @@
 server:
   port: 8080
 
+# Internal API Key for Minion-Master communication
+internal:
+  api:
+    key: MY_SECRET_KEY
+
 # Configuration for Minion service URLs
 minions:
   servers:
@@ -40,7 +45,7 @@ spring:
 # Logging configuration
 logging:
   level:
-    com.example.master: INFO
+    com.example.master: DEBUG
     org.springframework.web: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

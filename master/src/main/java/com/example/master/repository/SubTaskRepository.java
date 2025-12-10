@@ -1,6 +1,7 @@
 package com.example.master.repository;
 
 import com.example.master.entity.SubTaskEntity;
+import com.example.master.enums.SubTaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,8 +14,8 @@ import java.util.UUID;
  */
 @Repository
 public interface SubTaskRepository extends JpaRepository<SubTaskEntity, UUID> {
-    List<SubTaskEntity> findByTaskIdAndStatus(UUID taskId, String status);
-    List<SubTaskEntity> findByStatusAndStartedAtBefore(String status, LocalDateTime threshold);
-    List<SubTaskEntity> findByStatus(String statusTimeout);
+    List<SubTaskEntity> findByTaskIdAndStatus(UUID taskId, SubTaskStatus status);
+    List<SubTaskEntity> findByStatusAndStartedAtBefore(SubTaskStatus status, LocalDateTime threshold);
+    List<SubTaskEntity> findByStatus(SubTaskStatus status);
 
 }

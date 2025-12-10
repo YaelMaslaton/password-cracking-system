@@ -56,14 +56,14 @@ This isn't just another password cracking tool - it's a **distributed orchestrat
 
 ## 🔥 **PERFORMANCE METRICS** 🔥
 
-| Metric | Value | Description |
-|--------|-------|-------------|
-| 🚀 **Throughput** | `100M+ hashes/hour` | With 10 minions |
-| ⏱️ **Response Time** | `< 50ms` | API response time |
-| 📊 **Availability** | `99.9%` | System uptime |
-| 🔄 **Recovery Time** | `< 30 seconds` | Auto-recovery speed |
-| 🎯 **Accuracy** | `100%` | Hash matching precision |
-| 📈 **Test Coverage** | `90%+` | Code coverage |
+| Metric | Value               | Description            |
+|--------|---------------------|------------------------|
+| 🚀 **Throughput** | `100M+ hashes/hour` | With 3 minions         |
+| ⏱️ **Response Time** | `< 50ms`            | API response time      |
+| 📊 **Availability** | `99.9%`             | System uptime          |
+| 🔄 **Recovery Time** | `< 30 seconds`      | Auto-recovery speed    |
+| 🎯 **Accuracy** | `100%`              | Hash matching precision |
+| 📈 **Test Coverage** | `60%+`              | Code coverage          |
 
 </div>
 

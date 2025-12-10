@@ -5,6 +5,8 @@ import com.example.master.dto.ResultRequest;
 import com.example.master.dto.TaskResponse;
 import com.example.master.entity.BatchEntity;
 import com.example.master.entity.TaskEntity;
+import com.example.master.enums.BatchStatus;
+import com.example.master.enums.TaskStatus;
 import com.example.master.repository.BatchRepository;
 import com.example.master.repository.TaskRepository;
 import com.example.master.validator.HashFileValidator;
@@ -59,7 +61,7 @@ class MasterServiceImplTest {
     @BeforeEach
     void setUp() {
         testTaskId = UUID.randomUUID();
-        testTask = new TaskEntity(testTaskId, UUID.randomUUID(), "test-hash", "RUNNING", null, 3, 0);
+        testTask = new TaskEntity(testTaskId, UUID.randomUUID(), "test-hash", TaskStatus.RUNNING, null, 3, 0);
     }
 
     @Test
@@ -75,7 +77,7 @@ class MasterServiceImplTest {
         // Then
         assertNotNull(response);
         assertEquals(2, response.getTasksCount());
-        assertEquals("SUBMITTED", response.getStatus());
+        assertEquals(BatchStatus.SUBMITTED, response.getStatus());
         verify(batchRepository).save(any(BatchEntity.class));
         verify(taskOrchestrator, times(2)).createAndDispatchTask(any(), any());
     }
@@ -85,7 +87,7 @@ class MasterServiceImplTest {
         // Given
         ResultRequest request = new ResultRequest();
         request.setTaskId("task-id");
-        request.setStatus("FOUND");
+        request.setStatus(TaskStatus.FOUND);
         request.setPassword("password123");
 
         // When
@@ -107,7 +109,7 @@ class MasterServiceImplTest {
         assertNotNull(response);
         assertEquals(testTaskId.toString(), response.getTaskId());
         assertEquals("test-hash", response.getHash());
-        assertEquals("RUNNING", response.getStatus());
+        assertEquals(TaskStatus.RUNNING, response.getStatus());
     }
 
     @Test

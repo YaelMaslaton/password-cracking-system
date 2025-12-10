@@ -1,5 +1,6 @@
 package com.example.master.dto;
 
+import com.example.master.enums.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class TaskResponse {
     private String taskId;
     private String hash;
-    private String status;
+    private TaskStatus status;
     private String password;
 }

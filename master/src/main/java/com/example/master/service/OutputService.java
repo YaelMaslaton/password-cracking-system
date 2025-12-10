@@ -1,6 +1,8 @@
 package com.example.master.service;
 
+import com.example.master.common.AppConstants;
 import com.example.master.entity.TaskEntity;
+import com.example.master.enums.TaskStatus;
 import com.example.master.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,17 +35,19 @@ public class OutputService {
         }
 
         StringBuilder content = new StringBuilder();
-        content.append("# Password Cracking Results\n");
-        content.append("# Batch ID: ").append(batchId).append("\n");
-        content.append("# Total Tasks: ").append(tasks.size()).append("\n\n");
+        content.append(AppConstants.HEADER_RESULTS);
+        content.append(AppConstants.HEADER_BATCH_ID).append(batchId).append("\n");
+        content.append(AppConstants.HEADER_TOTAL_TASKS).append(tasks.size()).append("\n\n");
 
         for (TaskEntity task : tasks) {
             content.append(task.getHashValue()).append(":");
             
-            if ("FOUND".equals(task.getStatus())) {
+            if (task.getStatus() == TaskStatus.FOUND) {
                 content.append(task.getFoundPassword());
-            } else if ("FAILED".equals(task.getStatus())) {
-                content.append("FAILED_SERVER_CRASH");
+            } else if (task.getStatus() == TaskStatus.FAILED) {
+                content.append(AppConstants.RESULT_FAILED_SERVER_CRASH);
+            } else if (task.getStatus() == TaskStatus.RUNNING) {
+                content.append("RUNNING");
             } else {
                 content.append("NOT_FOUND");
             }

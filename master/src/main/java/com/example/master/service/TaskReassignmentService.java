@@ -4,6 +4,8 @@ import com.example.master.client.MinionClient;
 import com.example.master.dto.MinionRequest;
 import com.example.master.entity.SubTaskEntity;
 import com.example.master.entity.TaskEntity;
+import com.example.master.enums.SubTaskStatus;
+import com.example.master.enums.TaskStatus;
 import com.example.master.repository.SubTaskRepository;
 import com.example.master.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,7 @@ public class TaskReassignmentService {
     @Transactional
     public void reassignTimeoutTasks() {
 
-        List<SubTaskEntity> timeoutTasks = subTaskRepository.findByStatus(STATUS_TIMEOUT);
+        List<SubTaskEntity> timeoutTasks = subTaskRepository.findByStatus(SubTaskStatus.TIMEOUT);
         for (SubTaskEntity timeoutTask : timeoutTasks) {
             reassignOne(timeoutTask);
         }
@@ -47,9 +49,9 @@ public class TaskReassignmentService {
             log.error("SubTask {} exceeded max retries → marking FAILED",
                     subTask.getSubTaskId());
 
-            subTask.setStatus(STATUS_FAILED);
+            subTask.setStatus(SubTaskStatus.FAILED);
             subTaskRepository.save(subTask);
-            task.setStatus(STATUS_FAILED);
+            task.setStatus(TaskStatus.FAILED);
             taskRepository.save(task);
             batchManager.finalizeTask(task);
             return;
@@ -83,7 +85,7 @@ public class TaskReassignmentService {
                 log.error("Dispatch failed for SubTask {} → setting TIMEOUT again",
                         subTask.getSubTaskId());
 
-                subTask.setStatus(STATUS_TIMEOUT);
+                subTask.setStatus(SubTaskStatus.TIMEOUT);
                 subTaskRepository.save(subTask);
 
             } finally {

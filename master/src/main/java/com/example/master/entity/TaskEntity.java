@@ -1,5 +1,6 @@
 package com.example.master.entity;
 
+import com.example.master.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,8 +28,9 @@ public class TaskEntity {
     @Column(name = "hash_value", nullable = false)
     private String hashValue;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private TaskStatus status;
     
     @Column(name = "found_password")
     private String foundPassword;

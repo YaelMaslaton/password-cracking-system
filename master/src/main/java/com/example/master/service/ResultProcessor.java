@@ -3,6 +3,8 @@ package com.example.master.service;
 import com.example.master.dto.ResultRequest;
 import com.example.master.entity.SubTaskEntity;
 import com.example.master.entity.TaskEntity;
+import com.example.master.enums.SubTaskStatus;
+import com.example.master.enums.TaskStatus;
 import com.example.master.repository.SubTaskRepository;
 import com.example.master.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +35,11 @@ public class ResultProcessor {
 
         TaskEntity task = taskRepository.findById(subTask.getTaskId()).orElseThrow();
 
-        if (STATUS_FOUND.equals(task.getStatus()) || STATUS_NOT_FOUND.equals(task.getStatus())) {
+        if (task.getStatus() == TaskStatus.FOUND || task.getStatus() == TaskStatus.NOT_FOUND) {
             return;
         }
 
-        if (STATUS_FOUND.equals(resultRequest.getStatus())) {
+        if (resultRequest.getStatus() == TaskStatus.FOUND) {
             handleFoundResult(subTask, task, resultRequest.getPassword());
         } else {
             handleNotFoundResult(subTask, task);
@@ -45,11 +47,11 @@ public class ResultProcessor {
     }
 
     private void handleFoundResult(SubTaskEntity subTask, TaskEntity task, String password) {
-        subTask.setStatus(STATUS_COMPLETED);
+        subTask.setStatus(SubTaskStatus.COMPLETED);
         subTask.setResultPassword(password);
         subTaskRepository.save(subTask);
 
-        task.setStatus(STATUS_FOUND);
+        task.setStatus(TaskStatus.FOUND);
         task.setFoundPassword(password);
         task.setCompletedSubTasks(task.getTotalSubTasks());
         taskRepository.save(task);
@@ -59,23 +61,23 @@ public class ResultProcessor {
     }
 
     private void handleNotFoundResult(SubTaskEntity subTask, TaskEntity task) {
-        subTask.setStatus(STATUS_COMPLETED);
+        subTask.setStatus(SubTaskStatus.COMPLETED);
         subTaskRepository.save(subTask);
 
         int completed = task.getCompletedSubTasks() + 1;
         task.setCompletedSubTasks(completed);
 
         if (completed >= task.getTotalSubTasks()) {
-            task.setStatus(STATUS_NOT_FOUND);
+            task.setStatus(TaskStatus.NOT_FOUND);
             batchManager.finalizeTask(task);
         }
         taskRepository.save(task);
     }
 
     private void cancelRemainingSubTasks(UUID taskId) {
-        List<SubTaskEntity> runningSubs = subTaskRepository.findByTaskIdAndStatus(taskId, STATUS_RUNNING);
+        List<SubTaskEntity> runningSubs = subTaskRepository.findByTaskIdAndStatus(taskId, SubTaskStatus.RUNNING);
         for (SubTaskEntity other : runningSubs) {
-            other.setStatus(STATUS_CANCELLED);
+            other.setStatus(SubTaskStatus.CANCELLED);
             subTaskRepository.save(other);
         }
     }

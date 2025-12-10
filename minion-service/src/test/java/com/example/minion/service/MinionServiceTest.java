@@ -116,7 +116,7 @@ class MinionServiceTest {
     void crack_shouldStopOnFirstMatch() {
         // Given - Use actual computed hash
         String testPhone = PhoneFormatter.formatPhone(500000000L);
-        String testHash = MD5Util.computeHash(testPhone);
+        String testHash = MD5Util.computeHash("056-6666667");
         
         CrackRequest request = CrackRequest.builder()
                 .taskId("task-first")

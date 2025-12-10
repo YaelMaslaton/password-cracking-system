@@ -1,5 +1,6 @@
 package com.example.master.dto;
 
+import com.example.master.enums.BatchStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,5 @@ public class BatchResponse {
     private String batchId;
     private List<String> taskIds;
     private int tasksCount;
-    private String status;
+    private BatchStatus status;
 }

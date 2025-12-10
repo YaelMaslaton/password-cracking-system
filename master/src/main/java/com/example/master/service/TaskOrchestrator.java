@@ -4,6 +4,8 @@ import com.example.master.client.MinionClient;
 import com.example.master.dto.MinionRequest;
 import com.example.master.entity.SubTaskEntity;
 import com.example.master.entity.TaskEntity;
+import com.example.master.enums.SubTaskStatus;
+import com.example.master.enums.TaskStatus;
 import com.example.master.model.Range;
 import com.example.master.repository.SubTaskRepository;
 import com.example.master.repository.TaskRepository;
@@ -47,7 +49,7 @@ public class TaskOrchestrator {
 
     private TaskEntity createTask(UUID batchId, String hash, int minionCount) {
         UUID taskId = UUID.randomUUID();
-        TaskEntity task = new TaskEntity(taskId, batchId, hash, STATUS_RUNNING, null, minionCount, ZERO);
+        TaskEntity task = new TaskEntity(taskId, batchId, hash, TaskStatus.RUNNING, null, minionCount, ZERO);
         taskRepository.save(task);
         return task;
     }
@@ -57,7 +59,7 @@ public class TaskOrchestrator {
         for (Range range : ranges) {
             UUID subTaskId = UUID.randomUUID();
             SubTaskEntity subTask = new SubTaskEntity(subTaskId, taskId, range.getRangeFrom(), 
-                range.getRangeTo(), STATUS_RUNNING, null, LocalDateTime.now(), 0);
+                range.getRangeTo(), SubTaskStatus.RUNNING, null, LocalDateTime.now(), 0);
             subTaskRepository.save(subTask);
             subTasks.add(subTask);
         }

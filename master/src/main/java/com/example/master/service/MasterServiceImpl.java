@@ -4,6 +4,7 @@ import com.example.master.dto.BatchResponse;
 import com.example.master.dto.ResultRequest;
 import com.example.master.dto.TaskResponse;
 import com.example.master.entity.BatchEntity;
+import com.example.master.enums.BatchStatus;
 import com.example.master.repository.BatchRepository;
 import com.example.master.repository.TaskRepository;
 import com.example.master.validator.HashFileValidator;
@@ -27,7 +28,6 @@ import static com.example.master.common.AppConstants.*;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class MasterServiceImpl implements MasterService {
 
@@ -39,13 +39,14 @@ public class MasterServiceImpl implements MasterService {
     private final ExecutorService minionDispatchExecutor;
 
     @Override
+    @Transactional
     public BatchResponse submitHashes(MultipartFile file) throws IOException {
         List<String> validHashes = hashFileValidator.validateAndExtractHashes(file);
 
         UUID batchId = UUID.randomUUID();
         MDC.put("batchId", batchId.toString());
         
-        BatchEntity batch = new BatchEntity(batchId, LocalDateTime.now(), STATUS_RUNNING, validHashes.size(), ZERO);
+        BatchEntity batch = new BatchEntity(batchId, LocalDateTime.now(), BatchStatus.RUNNING, validHashes.size(), ZERO);
         batchRepository.save(batch);
 
         List<String> taskIds = new ArrayList<>();
@@ -54,7 +55,7 @@ public class MasterServiceImpl implements MasterService {
             taskIds.add(taskId);
         }
 
-        return new BatchResponse(batchId.toString(), taskIds, taskIds.size(), STATUS_SUBMITTED);
+        return new BatchResponse(batchId.toString(), taskIds, taskIds.size(), BatchStatus.SUBMITTED);
     }
 
     @Override
